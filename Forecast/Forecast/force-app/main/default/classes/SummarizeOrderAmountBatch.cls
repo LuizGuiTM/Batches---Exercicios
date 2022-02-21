@@ -40,6 +40,20 @@ global SummarizeOrderAmountBatch() {}
         GROUP BY AccountId
     ];
 
+    List<AggregateResult> aggregateResultByAccountList = [
+        SELECT AccountId, SUM(TotalAmount) TotalAmount
+        FROM Order
+        WHERE AccountId IN: ids
+        GROUP BY AccountId
+    ];
+
+    List<AggregateResult> aggregateResultByAccountProductList = [
+        SELECT AccountId, SUM(TotalAmount) TotalAmount, (SELECT Product2Id FROM OrderItem WHERE OrderId IN: ids)
+        FROM Order
+        WHERE AccountId IN: ids
+        GROUP BY AccountId, Product2Id
+    ];
+//Preciso pegar o Produto do OrderItem e somar o total amount e accountid do order
     List<ForecastSummary__c> ForecastSummaryList = new  List<ForecastSummary__c>();
 
     for (Order orderIt : mapOrder.Values()) 
