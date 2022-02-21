@@ -30,7 +30,7 @@ global with sharing class SummarizeForecastBatch implements Database.Batchable<S
         List<ForecastSummary__c> ForecastSummaryList = new  List<ForecastSummary__c>();
         for(AggregateResult accountResult : aggregateResultByAccountList )
         {
-            Decimal totalValue = (Decimal)(Decimal) accountResult.get('Value__c');
+            Decimal totalValue = (Decimal)accountResult.get('Value__c');
             ForecastSummaryList.add(new ForecastSummary__c(
                 Key__c = (String) accountResult.get('Account__c'),
                 Value__c = totalValue

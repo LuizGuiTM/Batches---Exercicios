@@ -21,7 +21,7 @@ global SummarizeOrderAmountBatch() {}
 
         }
 
-    Map<Id,Order> mapOrder  = new Map<Id,Order>([
+    /*Map<Id,Order> mapOrder  = new Map<Id,Order>([
     SELECT AccountId
     FROM Order
     WHERE AccountId IN: ids
@@ -39,6 +39,7 @@ global SummarizeOrderAmountBatch() {}
         WHERE AccountId IN: mapOrder.keySet()
         GROUP BY AccountId
     ];
+    */
 
     List<AggregateResult> aggregateResultByAccountList = [
         SELECT AccountId, SUM(TotalAmount) TotalAmount
@@ -48,44 +49,45 @@ global SummarizeOrderAmountBatch() {}
     ];
 
     List<AggregateResult> aggregateResultByAccountProductList = [
-        SELECT AccountId, SUM(TotalAmount) TotalAmount, (SELECT Product2Id FROM OrderItem WHERE OrderId IN: ids)
-        FROM Order
-        WHERE AccountId IN: ids
-        GROUP BY AccountId, Product2Id
+        SELECT OrderId, Product2Id
+        FROM orderItem
+        WHERE OrderId IN: ids
+        GROUP BY  OrderId, Product2Id
     ];
+
 //Preciso pegar o Produto do OrderItem e somar o total amount e accountid do order
     List<ForecastSummary__c> ForecastSummaryList = new  List<ForecastSummary__c>();
 
-    for (Order orderIt : mapOrder.Values()) 
+    for (AggregateResult accountResult : aggregateResultByAccountList) 
     {
-        for(AggregateResult aux : listTotalAmount)
-        {
+        Decimal totalValue = (Decimal)(Decimal) accountResult.get('TotalAmount');
             ForecastSummaryList.add(new ForecastSummary__c(
-                Key__c = (String) orderIt.AccountId,
-                RealizedValue__c = (Decimal) aux.get('TotalAmount')
-               // Product__c = orderItemIt.Product2Id
-                ));
-        }
-        
-    }
+                Key__c = (String) accountResult.get('AccountId'),
+                RealizedValue__c = totalValue
+            ));
 
-    for (Order orderIt : mapOrder.Values()) 
-    {
-        for(OrderItem orderItemIt : orderItemList)
-        {
-            for(AggregateResult aux : listTotalAmount)
+            if(this.accountInfo == null || totalValue > this.accountInfo.Value)
             {
-                ForecastSummaryList.add(new ForecastSummary__c(
-                Key__c = (String) orderIt.AccountId + ' ' + orderItemIt.Product2Id,
-                RealizedValue__c = (Decimal)aux.get('TotalAmount')
-                // Product__c = orderItemIt.Product2Id
-        ));
+                this.accountInfo = new AccountInfo(
+                    (String)accountResult.get('AccountId'),
+                    totalValue
+                );
+        
+             }
+    }
+        for(AggregateResult accountProductResult : aggregateResultByAccountList )
+        {
+            for(AggregateResult accountProductResult1 : aggregateResultByAccountProductList )
+            {
+            ForecastSummaryList.add(new ForecastSummary__c(
+                Key__c = (String) accountProductResult.get('AccountId') + ' ' + (String)accountProductResult1.get('Product2Id'),
+                RealizedValue__c = (Decimal) accountProductResult.get('TotalAmount')
+            ));
             }
         }
-    }
     if(ForecastSummaryList.size() > 0)
     {
-        update ForecastSummaryList ;
+        upsert ForecastSummaryList ;
     }
 
 }
@@ -108,7 +110,7 @@ global SummarizeOrderAmountBatch() {}
 
 global void finish(Database.BatchableContext context)
 {
-
+/*
 Account account = [
 SELECT Id, Name
 FROM Account
@@ -129,7 +131,7 @@ new List<Object> {forecastEmailSettings.Body__c, account.Name, this.accountInfo.
 mail.setPlainTextBody(body);
 
 Messaging.sendEmail(new List<Messaging.SingleEMailMessage>{mail});
-
+*/
 }
 
 }

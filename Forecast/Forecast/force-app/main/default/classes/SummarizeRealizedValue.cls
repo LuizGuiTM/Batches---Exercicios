@@ -1,7 +1,7 @@
          
-         global with sharing class SummarizeRealizedValue implements Database.Batchable<SObject>, Database.StateFul{
+      global with sharing class SummarizeRealizedValue implements Database.Batchable<SObject>, Database.StateFul{
     global SummarizeRealizedValue() {}
-
+/*
     private AccountInfo accountInfo = null;
 
     global Database.QueryLocator start(Database.BatchableContext context)
@@ -19,7 +19,7 @@
         for (ForecastSummary__c inicial : scope){
             ids.add(inicial.Account__c);
         }
-        /* Onde esse Status está sendo utilizado? */
+         Onde esse Status está sendo utilizado? 
         Map<Id,Order> mapOrder  = new Map<Id,Order>([
             SELECT Status, AccountId, TotalAmount
             FROM Order
@@ -56,14 +56,14 @@
              Também deveria ser  retirado o Product__c = orderItemIt.Product2Id, que também não existe, pois orderItemIt é um objeto Order e não OrderItem.  
              Caso for sumarização por conta produto faltaria a soma dos itens nos produtos 
              (explicar melhor) a Key__c teria de ser AccountId + Product2Id e realizar a soma dos produtos... etc
-            */
+            
             ForecastSummaryList.add(new ForecastSummary__c(
                 Key__c = (String) mapOrder.Values().AccountId,
                 RealizedValue__c = (Decimal) mapOrder.Values().TotalAmount,
                 Product__c = orderItemIt.Product2Id
             ));
 
-            /* Este update não está errado, mas é recomendável colocar ele fora deste loop, uma vez que é feito um update da mesma lista em toda iteração deste loop. */
+            Este update não está errado, mas é recomendável colocar ele fora deste loop, uma vez que é feito um update da mesma lista em toda iteração deste loop. 
            
             }
             if(ForecastSummaryList.size() > 0){
@@ -99,4 +99,5 @@
 
 }
     }
+    */
 }

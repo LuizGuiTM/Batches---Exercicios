@@ -1,6 +1,6 @@
-global with sharing class SummarizeOrderAmountBatch implements Database.Batchable<SObject>, Database.StateFul{
-    global SummarizeOrderAmountBatch() {}
-
+global with sharing class Example implements Database.Batchable<SObject>, Database.StateFul{
+    global Example() {}
+/*
 
     private AccountInfo accountInfo = null;
     global Database.QueryLocator start(Database.BatchableContext context)
@@ -49,7 +49,7 @@ global with sharing class SummarizeOrderAmountBatch implements Database.Batchabl
             FROM OrderItem
             WHERE Order.AccountId IN: ids AND Order.Status = 'Activated'
         ]);
-        */
+        
 
         for (OrderItem orderItemIt : orderItemList) {
 
@@ -150,4 +150,5 @@ global with sharing class SummarizeOrderAmountBatch implements Database.Batchabl
     }
 
 }
+*/
 }
